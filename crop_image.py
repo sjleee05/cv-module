@@ -12,7 +12,7 @@ def find_top_bottom_line(input_img):
             top_list.append(0)
 
         if input_img[input_img.shape[0]-1][col] == 255:
-            bottom_list.append(0)
+            bottom_list.append(input_img.shape[0]+1)
         
         for row in range(input_img.shape[0]):
             pix = input_img[row][col]
@@ -47,10 +47,15 @@ def preprocess_img(input_img, size):
     return thresh
 
 def crop_img(img, top_list, bottom_list):
-    top_line = max(top_list)
-    bottom_line = min(bottom_list)
+    
+    # TODO: need to cutting by x-axis
+    # top_list[-3] is temporal solution.
 
-    crop_img = img[:,top_line:bottom_line,:]
+    top_line = max(top_list[:-3])
+    bottom_line = min(bottom_list[:-3])
+    
+    print('top_line: ', top_line, 'bottom_line: ', bottom_line)
+    crop_img = img[top_line:bottom_line, :, :]
     
     return crop_img
     
@@ -61,27 +66,30 @@ def main():
 
     # read image
     img = cv2.imread('test.jpg')
-    img = cv2.resize(img, dsize = (640,480))
+    img = cv2.resize(img, dsize = (int(img.shape[1]/4),int(img.shape[0]/4)))
 
     # image pre-processing
-    processed_img = preprocess_img(img, (640,480))
-    
-    pixbrowseTime = time.time()-startTime
-    print('filterTime: ', pixbrowseTime)
+    processed_img = preprocess_img(img, (img.shape[1],img.shape[0]))
     
     # find top, bottom line
-    top_list, bottom_list = find_top_bottom_line(processed_img)
+    #top_list, bottom_list = find_top_bottom_line(processed_img)
     
-    # show image
-    cv2.imshow('processed_img', processed_img)
+    pixbrowseTime = time.time()-startTime
+    print('elpased Time (find top, bottom line): ', pixbrowseTime)
 
+    '''
     # draw line
     for col in range(processed_img.shape[1]):
         img[int(top_list[col]),col,:] = (255,0,0)
         img[int(bottom_list[col]),col,:] = (255,0,0)
+    '''    
     
+    cropped_img = crop_img(img, top_list, bottom_list)
+
     # show image
-    cv2.imshow('src',img)
+
+    cv2.imshow('original', img)
+    cv2.imshow('src',cropped_img)
             
     cv2.waitKey(0)
 
