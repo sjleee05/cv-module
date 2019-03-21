@@ -72,7 +72,7 @@ def main():
     processed_img = preprocess_img(img, (img.shape[1],img.shape[0]))
     
     # find top, bottom line
-    #top_list, bottom_list = find_top_bottom_line(processed_img)
+    top_list, bottom_list = find_top_bottom_line(processed_img)
     
     pixbrowseTime = time.time()-startTime
     print('elpased Time (find top, bottom line): ', pixbrowseTime)
